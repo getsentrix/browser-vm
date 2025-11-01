@@ -1,0 +1,27 @@
+name: Build browser-vm
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repo
+      uses: actions/checkout@v3
+
+    - name: Build Docker image
+      run: docker build -t buildroot .
+
+    - name: Run Buildroot build
+      run: docker run --rm -v ${{ github.workspace }}/dist:/build/dist buildroot
+
+    - name: Upload build artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: buildroot-dist
+        path: dist/
